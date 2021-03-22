@@ -1,43 +1,3 @@
-_TITLE "Count characters " 'puts tittle on tab
-SCREEN _NEWIMAGE(800, 600, 32) 'Put into Graphics Mode
-_SCREENMOVE _MIDDLE 'Put Screen in Middle
-CALL MAIN ' Calls the Main program to be run.
-SUB MAIN 'BEGIN: PROCEDURE MAIN
-    'Begin: Main Program
-    dd_total$ = "" 'Contains the Displayed letters that user added in
-    DO
-        CLS 'Clears the screen
-        _PRINTSTRING (10, 10), "THIS GAME COUNTS THE CHARACTERS YOU TYPE IN"
-        _PRINTSTRING (10, 30), "Keep selecting a lower case letter until you want to stop playing the game."
-        _PRINTSTRING (10, 50), "Hit the escape key to end the game."
-        dd_key$ = INKEY$ 'Collects the players entry from the keyboard
-        IF dd_key$ <> "" THEN 'BEGIN: ONLY RUN if letter was picked
-            dd_total$ = dd_total$ + dd_key$ 'add your new letter into the dd_total$ variable
-        END IF 'END: ONLY RUN if letter was picked
-        _PRINTSTRING (10, 70), "Display of Original dd_total$ variable:  " + dd_total$
-        _PRINTSTRING (10, 90), "Now lets count all the letters contained in dd_total$ shown on next line"
-        _PRINTSTRING (10, 110), MAIN.DISPLAYLETTERS$(dd_total$)
-        _PRINTSTRING (10, 140), STR$(LEN(dd_total$)) + " total characters typed in "
-        _DISPLAY 'Displays graphic
-    LOOP UNTIL dd_key$ = CHR$(27) 'Ends the game immediatly with the ESC Key
-    SYSTEM
-END SUB 'END: PROCEDURE MAIN
-'
-FUNCTION MAIN.DISPLAYLETTERS$ (dd_temp$)
-    dd_temphold$ = "" 'temporary holding variable for simulated counting text
-    IF LEN(dd_temp$) = 0 THEN 'BEGIN: Check if variable is empty
-        dd_temphold$ = "dd_total$ is empty" 'variable is empty
-    ELSE 'variable is not empty
-        FOR n = 1 TO LEN(dd_temp$) 'BEGIN: Loop to check every letter in variable
-            dd_current_letter_examined$ = MID$(dd_temp$, n, 1) 'Gets a letter to examine
-            dd_temphold$ = dd_temphold$ + dd_current_letter_examined$ + " is" + STR$(n) + ", " 'creates the simulating counting
-        NEXT n 'END; Loop to check every letter in variable
-    END IF 'END: Check if variable is empty
-    MAIN.DISPLAYLETTERS$ = dd_temphold$ 'always last line in function
-
-END FUNCTION 'END: FUNCTION MAIN.DISPLAYLETTERS$
-
-
 _TITLE "Hangman" 'puts tittle on tab
 SCREEN _NEWIMAGE(800, 600, 32) 'Put into Graphics Mode
 _SCREENMOVE _MIDDLE 'Put Screen in Middle
@@ -322,7 +282,12 @@ END SUB 'PROCEDURE MAIN.DISPLAY.DRAW_TEXT
 '
 FUNCTION MAIN.DISPLAY.DRAW_TEXT.DISPLAYWORD$ (dd_displaycorrect$) 'Puts a space between characters of the word
     'Add 6 lines of code
-    MAIN.DISPLAY.DRAW_TEXT.DISPLAYWORD = dd_displaycorrect$
+    am_temphold$ = "" 'temporary holding variable for simulated text
+    FOR n = 1 TO LEN(dd_displaycorrect$) 'BEGIN: Loop to check every letter in variable
+        am_current_letter_examined$ = MID$(dd_displaycorrect$, n, 1) 'Gets a letter to examine
+        am_temphold$ = am_temphold$ + am_current_letter_examined$ + " "
+    NEXT n 'END; Loop to check every letter in variable
+    MAIN.DISPLAY.DRAW_TEXT.DISPLAYWORD = am_temphold$
 END FUNCTION 'MAIN.DISPLAY.DRAW_TEXT.DISPLAYWORD
 '
 SUB MAIN.DATA_PROCESS.GET_GOOD_KEY 'PROCEDURE TO GET GOOD INPUT
@@ -336,6 +301,17 @@ SUB MAIN.DATA_PROCESS.GET_GOOD_KEY 'PROCEDURE TO GET GOOD INPUT
                 'BEGIN: look for a duplicate
                 'ADD CODE:: TO CHECK For Duplicates' 10 Lines of Code
                 '
+                IF LEN(dd_letters$) <> 0 THEN
+                    FOR n = 1 TO LEN(dd_letters$)
+                        dd_current_letter_examined$ = MID$(dd_letters$, n, 1) 'Gets a letters to examine
+                        IF dd_current_letter_examined$ = dd_key$ THEN 'checks if we have a match
+                            dd_found_error = 1 'Match Found so trigger an error
+                            dd_error_message$ = "You already picked letter " + dd_key$
+                            n = LEN(dd_letters$) 'stops the loop if match is found to speed code the code.
+                        END IF
+                    NEXT n
+                END IF
+
                 'END: look for a duplicate
             ELSE 'ELSE for:check if key is small letter
                 dd_found_error = 1 'Error found because not lower case letter
